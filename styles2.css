@@ -1,0 +1,314 @@
+.body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #fff;
+}
+
+/* 頁面容器 */
+.menu-container {
+    max-width: 1300px; /* 最大寬度 */
+    margin: 0 auto;
+}
+
+/* 標題樣式 */
+.menu-header {
+    text-align: center;
+    margin-bottom: 20px;
+    padding-top: 15px;
+}
+
+.menu-header h1 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #b8925d; /* 金色標題 */
+}
+
+/* 分類容器 */
+.menu-section {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 三等分的佈局 */
+    gap: 30px; /* 分類之間的間距 */
+}
+
+/* 每個分類 */
+.menu-category {
+    padding: 10px;
+}
+
+.price-header {
+    display: grid;
+    grid-template-columns: 4fr 1fr 1fr; /* 分成三欄：名稱、M、L */
+    font-size: 18px;
+    color: #b8925d;
+    margin-bottom: 10px;
+    margin-top:10px;
+    text-align: center;
+    align-items: center;
+}
+
+.category-name {
+    font-size: 18px;
+    font-weight: bold;
+    text-align: left;
+    display: inline-flex;
+    align-items: center;
+}
+
+.item-size{
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* 每個菜單項目 */
+.menu-item {
+    display: grid;
+    grid-template-columns: 4fr 1fr 1fr; /* 名稱、M價格、L價格 */
+    padding: 5px 0;
+    align-items: center;
+}
+
+.item-name {
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+}
+
+.item-price {
+    font-size: 16px;
+    color: #3c2f23;
+    text-align: center;
+}
+
+.logo {
+    position: absolute;
+    top: 27px;
+    left: 350px;
+    width: 50px;
+    height: auto;
+  }
+.hot {
+    width: 16px;
+    height: 16px;
+    margin-left: 4px;
+    background-color:#b8925d;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    text-align: center;
+  }
+
+.hot::before {
+    content: "H"; /* 嵌入文字 */
+    position: absolute;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+  }
+.small-text{
+    font-size:12px;
+    vertical-align: text-bottom;
+    color:#b8925d;
+    margin: 0;
+    padding: 0;
+}
+.small-text2{
+    font-size:12px;
+    vertical-align: text-bottom;
+    color:#b8925d;
+    margin: 0;
+    padding: 0;
+
+}
+.can-hot{
+    margin-top: 0px;
+    margin-left:1000px;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: left;
+    display: inline-flex;
+    align-items: center;
+
+}
+
+/* 選項按鈕樣式 */
+.option-btn {
+    margin: 2px;
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    background: white;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+.option-btn:disabled {
+    cursor: not-allowed;
+}
+
+.sugar-selected, .ice-selected, .temp-selected, .size-selected {
+    background: #b8925d;
+    color: white;
+    border-color: #b8925d;
+}
+
+/* 點餐視窗樣式 */
+.order-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    right: -400px;
+    width: 400px;
+    height: 100%;
+    background-color: white;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.2);
+    z-index: 1000;
+    transition: right 0.3s ease-in-out;
+}
+
+.modal-content {
+    padding: 20px;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.modal-title {
+    margin: 0;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.option-group {
+    margin: 10px 0;
+}
+
+.button-group {
+    position: sticky;
+    bottom: 0;
+    background: white;
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+}
+
+.confirm-btn {
+    width: 100%;
+    background: #b8925d;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+.cancel-btn {
+    width: 100%;
+    background: #f44336;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+/* 訂單區域樣式 */
+.order-container {
+    margin: 20px;
+    padding: 20px;
+    background: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.order-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.table-header {
+    background: #f5f5f5;
+    border-bottom: 2px solid #ddd;
+}
+
+.table-cell {
+    padding: 10px;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}
+
+.delete-btn {
+    background: #f44336;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.export-btn {
+    background: #b8925d;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.clear-btn {
+    background: #f44336;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+/* 輸入欄位樣式 */
+.quantity-input {
+    width: 60px;
+}
+
+.note-input {
+    width: 200px;
+    padding: 5px;
+}
+
+/* 滾動條樣式 */
+.modal-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
