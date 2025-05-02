@@ -83,10 +83,16 @@ body {
     margin-bottom: 10px;
     padding-bottom: 5px;
     border-bottom: 1px solid #ddd;
+    text-align: center;
 }
 
 .category-name {
     font-weight: bold;
+    text-align: left;
+}
+
+.item-size {
+    text-align: center;
 }
 
 /* 每個菜單項目 */
@@ -95,6 +101,7 @@ body {
     grid-template-columns: 2fr 1fr 1fr;
     padding: 8px 0;
     border-bottom: 1px solid #eee;
+    align-items: center;
 }
 
 .item-name {
@@ -107,6 +114,7 @@ body {
 .item-price {
     font-size: 14px;
     text-align: center;
+    padding: 0 5px;
 }
 
 /* 熱飲標記 */
@@ -118,9 +126,19 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
+    margin-left: 4px;
+}
+
+.hot::before {
+    content: "H";
     color: white;
     font-size: 12px;
     font-weight: bold;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .small-text {
