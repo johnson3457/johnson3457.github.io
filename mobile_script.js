@@ -146,12 +146,20 @@ document.addEventListener('DOMContentLoaded', () => {
 function openModal() {
     const modal = document.getElementById('orderModal');
     modal.style.display = 'block';
+    // 使用 setTimeout 確保 display:block 後再添加動畫類
+    setTimeout(() => {
+        modal.classList.add('show');
+    }, 10);
 }
 
 // 關閉點餐視窗
 function closeModal() {
     const modal = document.getElementById('orderModal');
-    modal.style.display = 'none';
+    modal.classList.remove('show');
+    // 等待動畫完成後再隱藏
+    setTimeout(() => {
+        modal.style.display = 'none';
+    }, 300);
 }
 
 // 選擇甜度
