@@ -156,6 +156,12 @@ body {
     background-color: rgba(0, 0, 0, 0.5);
     display: none;
     z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.order-modal.show {
+    opacity: 1;
 }
 
 .modal-content {
@@ -164,6 +170,12 @@ body {
     height: 100%;
     overflow-y: auto;
     padding: 20px;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+}
+
+.order-modal.show .modal-content {
+    transform: translateY(0);
 }
 
 .modal-header {
@@ -303,7 +315,7 @@ body {
 }
 
 .export-btn {
-    background: #b8925d;
+    background:#b8925d;
     color: white;
 }
 
