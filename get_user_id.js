@@ -23,7 +23,12 @@ app.use(cors({
     allowedHeaders: ['Content-Type']
 }));
 
-app.use(express.json());
+// 重要：在 middleware 之前設定 raw body
+app.use(express.json({
+    verify: (req, res, buf) => {
+        req.rawBody = buf.toString();
+    }
+}));
 
 // 處理訂單發送
 app.post('/send-order', async (req, res) => {
