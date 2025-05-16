@@ -9,6 +9,11 @@ const config = {
     channelSecret: process.env.LINE_CHANNEL_SECRET
 };
 
+// 檢查環境變數
+if (!config.channelAccessToken || !config.channelSecret) {
+    console.error('錯誤：未設定 LINE_CHANNEL_ACCESS_TOKEN 或 LINE_CHANNEL_SECRET');
+}
+
 const client = new line.Client(config);
 
 // 設定 CORS
@@ -46,21 +51,33 @@ app.post('/send-order', async (req, res) => {
 // 處理 Line Webhook 請求
 app.post('/webhook', line.middleware(config), async (req, res) => {
     try {
+        console.log('收到 Webhook 請求');
         const events = req.body.events;
+        
+        if (!events || events.length === 0) {
+            console.log('沒有事件');
+            return res.status(200).end();
+        }
         
         for (let event of events) {
             if (event.type === 'message') {
-                // 當使用者傳送訊息時，回傳他們的 User ID
-                await client.replyMessage(event.replyToken, {
-                    type: 'text',
-                    text: `您的 Line User ID 是：${event.source.userId}`
-                });
+                console.log('收到訊息事件');
+                try {
+                    // 當使用者傳送訊息時，回傳他們的 User ID
+                    await client.replyMessage(event.replyToken, {
+                        type: 'text',
+                        text: `您的 Line User ID 是：${event.source.userId}`
+                    });
+                    console.log('成功回覆訊息');
+                } catch (error) {
+                    console.error('回覆訊息時發生錯誤:', error);
+                }
             }
         }
         
         res.status(200).end();
     } catch (error) {
-        console.error('Error:', error);
+        console.error('Webhook 處理錯誤:', error);
         res.status(500).end();
     }
 });
