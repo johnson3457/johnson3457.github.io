@@ -5,15 +5,15 @@ const app = express();
 
 // Line 設定
 const config = {
-    channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN || '/o4fprFnCJiWSTItY8RGv/rPAFYhuCGxFxBrepdCYkflpdoT0lH64/nSfnJjbFF1wK6LNz++kR74esxverQBmAXKxeYbHP8TPf52WktKVsirtNK7iqOO4iN723swSfo8VO/xvIZ3Tiwa+3v0CTRENgdB04t89/1O/w1cDnyilFU=',
-    channelSecret: process.env.LINE_CHANNEL_SECRET || 'a104eab7cbe4b6bdee432842ea77c444'
+    channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
+    channelSecret: process.env.LINE_CHANNEL_SECRET
 };
 
 const client = new line.Client(config);
 
 // 設定 CORS
 app.use(cors({
-    origin: ['https://您的GitHubPages網址.github.io', 'http://localhost:3000'],
+    origin: ['https://johnson3457.github.io', 'http://localhost:3000'],
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type']
 }));
