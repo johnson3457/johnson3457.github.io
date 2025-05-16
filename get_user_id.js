@@ -13,7 +13,7 @@ const client = new line.Client(config);
 
 // 設定 CORS
 app.use(cors({
-    origin: ['https://johnson3457.github.io', 'http://localhost:3000'],
+    origin: ['https://johnson3457.github.io', 'http://localhost:3000', 'https://johnson3457-github-io.vercel.app'],
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type']
 }));
@@ -24,7 +24,11 @@ app.use(express.json());
 app.post('/send-order', async (req, res) => {
     try {
         const { orderText } = req.body;
-        const userId = process.env.LINE_USER_ID || '您的_LINE_USER_ID';
+        const userId = process.env.LINE_USER_ID;
+        
+        if (!userId) {
+            throw new Error('未設定 LINE_USER_ID 環境變數');
+        }
         
         // 發送訊息到指定的使用者
         await client.pushMessage(userId, {
