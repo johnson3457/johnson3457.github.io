@@ -275,7 +275,7 @@ async function sendToLine() {
         exportBtn.disabled = true;
         
         // 發送到後端（請替換成您的後端伺服器網址）
-        const response = await fetch('https://您的後端伺服器網址/send-order', {
+        const response = await fetch('https://johnson3457-github-io.vercel.app/send-order', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
