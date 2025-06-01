@@ -70,7 +70,6 @@ async function initializeLiff() {
         isLiffInitialized = true;
         console.log('LIFF 初始化成功');
 
-        Add commentMore actions
         if (liff.isLoggedIn()) {
             const profile = await liff.getProfile();
             userId = profile.userId;
