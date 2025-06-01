@@ -345,4 +345,37 @@ body {
     .menu-section {
         grid-template-columns: repeat(3, 1fr);
     }
+}
+
+/* 加入 Line Bot 按鈕樣式 */
+.join-bot-container {
+    text-align: center;
+    padding: 20px;
+    margin-top: 20px;
+    background-color: #f8f8f8;
+    border-top: 1px solid #eee;
+}
+
+.join-bot-btn {
+    display: inline-block;
+    text-decoration: none;
+    transition: transform 0.2s ease;
+}
+
+.join-bot-btn:hover {
+    transform: scale(1.05);
+}
+
+.join-bot-img {
+    width: 200px;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 確保按鈕在手機上也能正常顯示 */
+@media screen and (max-width: 480px) {
+    .join-bot-img {
+        width: 180px;
+    }
 } 
