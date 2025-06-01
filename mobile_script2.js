@@ -65,22 +65,21 @@ async function initializeLiff() {
             throw new Error('LIFF SDK 未載入');
         }
 
-        console.log('呼叫 liff.init()');
-        await liff.init({ liffId: '2007324025-3akjMML1' });
-        isLiffInitialized = true;
-        console.log('LIFF 初始化成功');
-        
-        // 檢查是否在 LINE 環境中
+        // 在初始化前檢查是否在 LINE 環境中
         const isInLine = liff.isInClient() || liff.getOS() === 'ios' || liff.getOS() === 'android';
         
         // 如果不在 LINE 環境中，直接跳轉到加入 Bot 的頁面
         if (!isInLine) {
             console.log('檢測到外部訪問，準備跳轉到加入 Bot 頁面');
-            window.location.href = 'https://line.me/R/ti/p/@841latzi';
+            window.location.replace('https://line.me/R/ti/p/@841latzi');
             return;
         }
+
+        console.log('呼叫 liff.init()');
+        await liff.init({ liffId: '2007324025-3akjMML1' });
+        isLiffInitialized = true;
+        console.log('LIFF 初始化成功');
         
-        // 在 LINE 環境中，檢查是否已登入
         if (liff.isLoggedIn()) {
             const profile = await liff.getProfile();
             userId = profile.userId;
