@@ -309,6 +309,7 @@ async function sendToLine() {
         try {
             const profile = await liff.getProfile();
             userId = profile.userId;
+            console.log('獲取到用戶ID:', userId);
         } catch (error) {
             console.error('獲取用戶資料失敗:', error);
             alert('獲取用戶資料失敗，請重新登入');
@@ -336,6 +337,8 @@ async function sendToLine() {
         exportBtn.textContent = '傳送中...';
         exportBtn.disabled = true;
         
+        console.log('準備發送訂單，用戶ID:', userId);
+        
         // 發送到後端
         const response = await fetch('https://johnson3457-github-io.vercel.app/send-order', {
             method: 'POST',
@@ -349,7 +352,8 @@ async function sendToLine() {
         });
         
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            const errorData = await response.json();
+            throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
         }
         
         const result = await response.json();
