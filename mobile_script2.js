@@ -58,16 +58,26 @@ let userId = null;
 // 初始化 LIFF
 async function initializeLiff() {
     try {
+        // 檢查是否在 Line 環境中
+        if (!liff.isInClient() && !liff.isLoggedIn()) {
+            // 如果不在 Line 環境中且未登入，直接跳轉到登入頁面
+            liff.login();
+            return;
+        }
+
         await liff.init({ liffId: '2007324025-3akjMML1' });
+        
         if (liff.isLoggedIn()) {
             const profile = await liff.getProfile();
             userId = profile.userId;
             console.log('已獲取用戶ID:', userId);
         } else {
+            // 如果未登入，跳轉到登入頁面
             liff.login();
         }
     } catch (error) {
         console.error('LIFF 初始化失敗:', error);
+        alert('登入失敗，請稍後再試或聯繫客服');
     }
 }
 
