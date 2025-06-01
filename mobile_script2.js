@@ -291,9 +291,10 @@ async function sendToLine() {
         return;
     }
     
-    // 檢查是否在 Line 環境中
-    if (!liff.isInClient()) {
-        alert('請在 Line 中開啟此網頁！');
+    // 檢查是否在 Line 環境中以及 LIFF 是否已初始化
+    if (!liff.isInClient() || !isLiffInitialized) {
+        console.error('不在 Line 環境中或 LIFF 未初始化');
+        alert('請在 Line 中開啟此網頁，並確保頁面已完全載入！');
         return;
     }
     
