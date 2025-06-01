@@ -66,7 +66,9 @@ async function initializeLiff() {
         }
 
         // 在初始化前檢查是否在 LINE 環境中
-        const isInLine = liff.isInClient() || liff.getOS() === 'ios' || liff.getOS() === 'android';
+        const isInLine = liff.isInClient() || 
+                        (liff.getOS() === 'ios' && liff.getContext().type === 'utou') || 
+                        (liff.getOS() === 'android' && liff.getContext().type === 'utou');
         
         // 如果不在 LINE 環境中，直接跳轉到加入 Bot 的頁面
         if (!isInLine) {
