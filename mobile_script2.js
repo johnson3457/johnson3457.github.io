@@ -52,6 +52,25 @@ const menuData = {
     ]
 };
 
+// LIFF 相關變數
+let userId = null;
+
+// 初始化 LIFF
+async function initializeLiff() {
+    try {
+        await liff.init({ liffId: '2007324025-3akjMML1' });
+        if (liff.isLoggedIn()) {
+            const profile = await liff.getProfile();
+            userId = profile.userId;
+            console.log('已獲取用戶ID:', userId);
+        } else {
+            liff.login();
+        }
+    } catch (error) {
+        console.error('LIFF 初始化失敗:', error);
+    }
+}
+
 // 動態生成菜單
 function generateMenu() {
     const menuSection = document.querySelector('.menu-section');
@@ -119,8 +138,9 @@ function generateMenu() {
     }
 }
 
-// 頁面載入時生成菜單
-document.addEventListener('DOMContentLoaded', () => {
+// 頁面載入時初始化 LIFF 並生成菜單
+document.addEventListener('DOMContentLoaded', async () => {
+    await initializeLiff();
     generateMenu();
     
     // 為所有飲料名稱添加點擊事件
@@ -256,6 +276,13 @@ async function sendToLine() {
         return;
     }
     
+    // 檢查是否已登入
+    if (!userId) {
+        alert('請先登入 Line！');
+        liff.login();
+        return;
+    }
+    
     // 構建訂單文字
     let orderText = 'WHITE ALLEY 訂單明細\n\n';
     orderText += '品項\t甜度\t冰塊\t數量\t金額\t備註\n';
@@ -282,7 +309,8 @@ async function sendToLine() {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                orderText: orderText
+                orderText: orderText,
+                userId: userId
             })
         });
         
@@ -298,7 +326,7 @@ async function sendToLine() {
             if (tbody) {
                 tbody.innerHTML = '';
                 updateTotal();
-                alert('訂單已成功傳送到 Line！');
+                alert('訂單已成功傳送到您的 Line！');
             } else {
                 console.error('找不到訂單表格');
             }
