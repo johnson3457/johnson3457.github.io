@@ -63,19 +63,11 @@ app.post('/webhook', line.middleware(config), async (req, res) => {
             return res.status(200).end();
         }
         
+        // 只處理訂單相關的訊息
         for (let event of events) {
             if (event.type === 'message') {
                 console.log('收到訊息事件');
-                try {
-                    // 當使用者傳送訊息時，直接推播訊息給使用者
-                    await client.pushMessage(event.source.userId, {
-                        type: 'text',
-                        text: `您的 Line User ID 是：${event.source.userId}`
-                    });
-                    console.log('成功發送訊息');
-                } catch (error) {
-                    console.error('發送訊息時發生錯誤:', error);
-                }
+                // 不自動回覆任何訊息
             }
         }
         
