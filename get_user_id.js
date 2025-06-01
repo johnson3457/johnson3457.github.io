@@ -33,14 +33,13 @@ app.use(express.json({
 // 處理訂單發送
 app.post('/send-order', async (req, res) => {
     try {
-        const { orderText } = req.body;
-        const userId = process.env.LINE_USER_ID;
+        const { orderText, userId } = req.body;
         
         if (!userId) {
-            throw new Error('未設定 LINE_USER_ID 環境變數');
+            throw new Error('未提供使用者 ID');
         }
         
-        // 發送訊息到指定的使用者
+        // 發送訊息到使用者的聊天室
         await client.pushMessage(userId, {
             type: 'text',
             text: orderText
