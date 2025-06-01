@@ -70,9 +70,9 @@ async function initializeLiff() {
         isLiffInitialized = true;
         console.log('LIFF 初始化成功');
         
-        // 檢查是否在 LINE 內部
-        if (!liff.isInClient()) {
-            // 如果不在 LINE 內部，跳轉到加入 Bot 的頁面
+        // 檢查是否在 LINE 內部或從 LINE 聊天室點擊
+        if (!liff.isInClient() && !liff.isLoggedIn()) {
+            // 如果不在 LINE 內部且未登入，跳轉到加入 Bot 的頁面
             window.location.href = 'https://line.me/R/ti/p/@841latzi';
             return;
         }
