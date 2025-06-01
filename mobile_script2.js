@@ -1,4 +1,4 @@
-// 菜單數據More actions
+// 菜單數據
 const menuData = {
     "好茶系列": [
         { name: "茉香綠茶", hot: true, prices: { M: 25, L: 30 } },
