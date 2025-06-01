@@ -54,18 +54,13 @@ const menuData = {
 
 // LIFF 相關變數
 let userId = null;
+let isLiffInitialized = false;
 
 // 初始化 LIFF
 async function initializeLiff() {
     try {
-        // 檢查是否在 Line 環境中
-        if (!liff.isInClient() && !liff.isLoggedIn()) {
-            // 如果不在 Line 環境中且未登入，直接跳轉到登入頁面
-            liff.login();
-            return;
-        }
-
         await liff.init({ liffId: '2007324025-3akjMML1' });
+        isLiffInitialized = true;
         
         if (liff.isLoggedIn()) {
             const profile = await liff.getProfile();
@@ -77,7 +72,7 @@ async function initializeLiff() {
         }
     } catch (error) {
         console.error('LIFF 初始化失敗:', error);
-        alert('登入失敗，請稍後再試或聯繫客服');
+        isLiffInitialized = false;
     }
 }
 
@@ -286,11 +281,35 @@ async function sendToLine() {
         return;
     }
     
+    // 檢查是否已初始化
+    if (!isLiffInitialized) {
+        try {
+            await initializeLiff();
+        } catch (error) {
+            console.error('LIFF 初始化失敗:', error);
+            alert('系統初始化失敗，請重新整理頁面後再試');
+            return;
+        }
+    }
+    
     // 檢查是否已登入
-    if (!userId) {
+    if (!liff.isLoggedIn()) {
         alert('請先登入 Line！');
         liff.login();
         return;
+    }
+    
+    // 如果已登入但沒有 userId，重新獲取
+    if (!userId) {
+        try {
+            const profile = await liff.getProfile();
+            userId = profile.userId;
+        } catch (error) {
+            console.error('獲取用戶資料失敗:', error);
+            alert('獲取用戶資料失敗，請重新登入');
+            liff.login();
+            return;
+        }
     }
     
     // 構建訂單文字
@@ -366,4 +385,5 @@ function clearAllOrders() {
             document.getElementById('totalAmount').textContent = '0';
         }
     }
+} 
 } 
