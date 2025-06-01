@@ -65,18 +65,6 @@ async function initializeLiff() {
             throw new Error('LIFF SDK 未載入');
         }
 
-        // 在初始化前檢查是否在 LINE 環境中
-        const isInLine = liff.isInClient() || 
-                        (liff.getOS() === 'ios' && liff.getContext().type === 'utou') || 
-                        (liff.getOS() === 'android' && liff.getContext().type === 'utou');
-        
-        // 如果不在 LINE 環境中，直接跳轉到加入 Bot 的頁面
-        if (!isInLine) {
-            console.log('檢測到外部訪問，準備跳轉到加入 Bot 頁面');
-            window.location.replace('https://line.me/R/ti/p/@841latzi');
-            return;
-        }
-
         console.log('呼叫 liff.init()');
         await liff.init({ liffId: '2007324025-3akjMML1' });
         isLiffInitialized = true;
@@ -167,6 +155,25 @@ function generateMenu() {
 // 頁面載入時初始化 LIFF 並生成菜單
 document.addEventListener('DOMContentLoaded', async () => {
     try {
+        // 檢查是否在 LINE 環境中
+        if (typeof liff !== 'undefined') {
+            const isInLine = liff.isInClient() || 
+                            (liff.getOS() === 'ios' && liff.getContext().type === 'utou') || 
+                            (liff.getOS() === 'android' && liff.getContext().type === 'utou');
+            
+            // 如果不在 LINE 環境中，直接跳轉到加入 Bot 的頁面
+            if (!isInLine) {
+                console.log('檢測到外部訪問，準備跳轉到加入 Bot 頁面');
+                window.location.replace('https://line.me/R/ti/p/@841latzi');
+                return;
+            }
+        } else {
+            // 如果 LIFF SDK 未載入，也視為外部訪問
+            console.log('LIFF SDK 未載入，視為外部訪問');
+            window.location.replace('https://line.me/R/ti/p/@841latzi');
+            return;
+        }
+
         await initializeLiff();
         if (isLiffInitialized) {
             generateMenu();
