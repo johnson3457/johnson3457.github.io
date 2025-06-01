@@ -60,16 +60,12 @@ let isLiffInitialized = false;
 async function initializeLiff() {
     console.log('開始初始化 LIFF...');
     try {
-        // 檢查是否在 Line 環境中
-        if (!liff.isInClient()) {
-            console.log('不在 Line 環境中');
-            isLiffInitialized = false; // 確保狀態為 false
-            // 可以考慮在這裡顯示一個提示給用戶，讓他們知道要在 Line 中開啟
-            // alert('請在 Line 應用程式中開啟此頁面以獲得完整體驗。'); // 暫時不加，避免重複提示
-            return;
+        // 檢查 LIFF SDK 是否已載入
+        if (typeof liff === 'undefined') {
+            throw new Error('LIFF SDK 未載入');
         }
 
-        console.log('在 Line 環境中，呼叫 liff.init()');
+        console.log('呼叫 liff.init()');
         await liff.init({ liffId: '2007324025-3akjMML1' });
         isLiffInitialized = true;
         console.log('LIFF 初始化成功');
@@ -80,13 +76,13 @@ async function initializeLiff() {
             console.log('LIFF 已登入，獲取到用戶ID:', userId);
         } else {
             console.log('LIFF 未登入，準備呼叫 liff.login()');
-            // 這裡會自動重定向到 Line 登入頁面
+            // 不管是在 LINE 內還是外部，都進行登入
             liff.login();
         }
     } catch (error) {
         console.error('LIFF 初始化失敗:', error);
         isLiffInitialized = false;
-        alert('Line 登入系統初始化失敗，請稍後再試或聯繫客服。'); // 增加更友善的錯誤提示
+        alert('Line 登入系統初始化失敗：' + error.message);
     }
 }
 
@@ -161,27 +157,29 @@ function generateMenu() {
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         await initializeLiff();
-        generateMenu();
-        
-        // 為所有飲料名稱添加點擊事件
-        document.querySelectorAll('.item-name').forEach(item => {
-            item.style.cursor = 'pointer';
-            item.addEventListener('click', function() {
-                const itemName = this.textContent.split('(')[0].trim();
-                const menuItem = this.closest('.menu-item');
-                const prices = Array.from(menuItem.querySelectorAll('.item-price'))
-                    .map(el => el.textContent.trim())
-                    .filter(price => price !== '');
-                
-                document.getElementById('selectedDrinkName').textContent = itemName;
-                document.getElementById('selectedDrinkPrice').textContent = 
-                    `價格：${prices.map((price, i) => `${['M', 'L'][i]} ${price}`).join(' / ')} 元`;
-                
-                openModal();
+        if (isLiffInitialized) {
+            generateMenu();
+            // 為所有飲料名稱添加點擊事件
+            document.querySelectorAll('.item-name').forEach(item => {
+                item.style.cursor = 'pointer';
+                item.addEventListener('click', function() {
+                    const itemName = this.textContent.split('(')[0].trim();
+                    const menuItem = this.closest('.menu-item');
+                    const prices = Array.from(menuItem.querySelectorAll('.item-price'))
+                        .map(el => el.textContent.trim())
+                        .filter(price => price !== '');
+                    
+                    document.getElementById('selectedDrinkName').textContent = itemName;
+                    document.getElementById('selectedDrinkPrice').textContent = 
+                        `價格：${prices.map((price, i) => `${['M', 'L'][i]} ${price}`).join(' / ')} 元`;
+                    
+                    openModal();
+                });
             });
-        });
+        }
     } catch (error) {
         console.error('頁面初始化失敗:', error);
+        alert('頁面初始化失敗：' + error.message);
     }
 });
 
@@ -299,10 +297,10 @@ async function sendToLine() {
         return;
     }
     
-    // 檢查是否在 Line 環境中以及 LIFF 是否已初始化
-    if (!liff.isInClient() || !isLiffInitialized) {
-        console.error('不在 Line 環境中或 LIFF 未初始化');
-        alert('請在 Line 中開啟此網頁，並確保頁面已完全載入！');
+    // 檢查 LIFF 是否已初始化
+    if (!isLiffInitialized) {
+        console.error('LIFF 未初始化');
+        alert('請等待頁面完全載入！');
         return;
     }
     
