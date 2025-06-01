@@ -70,16 +70,6 @@ async function initializeLiff() {
         isLiffInitialized = true;
         console.log('LIFF 初始化成功');
         
-        // 檢查是否在 LINE 內部
-        if (!liff.isInClient()) {
-            // 顯示提示訊息
-            const message = `
-建議在 LINE 應用程式中開啟此頁面
-加入官方帳號：https://line.me/R/ti/p/@841latzi
-            `;
-            alert(message);
-        }
-        
         if (liff.isLoggedIn()) {
             const profile = await liff.getProfile();
             userId = profile.userId;
