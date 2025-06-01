@@ -33,17 +33,154 @@ app.use(express.json({
 // 處理訂單發送
 app.post('/send-order', async (req, res) => {
     try {
-        const { orderText, userId } = req.body;
+        const { orderText, userId, orderTime } = req.body;
         
         if (!userId) {
             throw new Error('未提供使用者 ID');
         }
-        
-        // 發送訊息到使用者的聊天室
-        await client.pushMessage(userId, {
-            type: 'text',
-            text: orderText
-        });
+
+        // 解析訂單文字
+        const lines = orderText.split('\n');
+        const title = lines[0]; // WHITE ALLEY 訂單明細
+        const items = lines.slice(4, -2); // 訂單項目
+        const total = lines[lines.length - 1]; // 總金額
+
+        // 建立 Flex Message
+        const flexMessage = {
+            type: 'flex',
+            altText: 'WHITE ALLEY 訂單明細',
+            contents: {
+                type: 'bubble',
+                header: {
+                    type: 'box',
+                    layout: 'vertical',
+                    contents: [
+                        {
+                            type: 'text',
+                            text: 'WHITE ALLEY',
+                            weight: 'bold',
+                            size: 'xl',
+                            color: '#b8925d'
+                        },
+                        {
+                            type: 'text',
+                            text: '訂單明細',
+                            size: 'lg',
+                            margin: 'md'
+                        },
+                        {
+                            type: 'text',
+                            text: `訂單時間：${orderTime}`,
+                            size: 'sm',
+                            color: '#666666',
+                            margin: 'md'
+                        }
+                    ]
+                },
+                body: {
+                    type: 'box',
+                    layout: 'vertical',
+                    contents: items.map(item => {
+                        const [name, sugar, ice, quantity, price, note] = item.split('\t');
+                        return {
+                            type: 'box',
+                            layout: 'vertical',
+                            margin: 'md',
+                            contents: [
+                                {
+                                    type: 'box',
+                                    layout: 'horizontal',
+                                    contents: [
+                                        {
+                                            type: 'text',
+                                            text: name,
+                                            size: 'sm',
+                                            weight: 'bold',
+                                            flex: 5
+                                        },
+                                        {
+                                            type: 'text',
+                                            text: `${quantity}杯`,
+                                            size: 'sm',
+                                            flex: 2,
+                                            align: 'end'
+                                        }
+                                    ]
+                                },
+                                {
+                                    type: 'box',
+                                    layout: 'horizontal',
+                                    margin: 'sm',
+                                    contents: [
+                                        {
+                                            type: 'text',
+                                            text: `${sugar} / ${ice}`,
+                                            size: 'xs',
+                                            color: '#666666',
+                                            flex: 3
+                                        },
+                                        {
+                                            type: 'text',
+                                            text: `$${price}`,
+                                            size: 'sm',
+                                            color: '#b8925d',
+                                            flex: 2,
+                                            align: 'end'
+                                        }
+                                    ]
+                                },
+                                note ? {
+                                    type: 'text',
+                                    text: `備註：${note}`,
+                                    size: 'xs',
+                                    color: '#666666',
+                                    margin: 'sm'
+                                } : null
+                            ].filter(Boolean)
+                        };
+                    })
+                },
+                footer: {
+                    type: 'box',
+                    layout: 'vertical',
+                    contents: [
+                        {
+                            type: 'box',
+                            layout: 'horizontal',
+                            contents: [
+                                {
+                                    type: 'text',
+                                    text: '總金額',
+                                    size: 'md',
+                                    weight: 'bold',
+                                    flex: 0
+                                },
+                                {
+                                    type: 'text',
+                                    text: total.replace('總金額：', ''),
+                                    size: 'md',
+                                    weight: 'bold',
+                                    color: '#b8925d',
+                                    align: 'end',
+                                    flex: 0
+                                }
+                            ]
+                        }
+                    ]
+                },
+                styles: {
+                    header: {
+                        backgroundColor: '#f8f8f8'
+                    },
+                    footer: {
+                        backgroundColor: '#f8f8f8'
+                    }
+                }
+            }
+        };
+
+        // 發送 Flex Message
+        await client.pushMessage(userId, flexMessage);
         
         res.json({ success: true });
     } catch (error) {
