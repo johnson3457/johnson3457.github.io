@@ -70,13 +70,19 @@ async function initializeLiff() {
         isLiffInitialized = true;
         console.log('LIFF 初始化成功');
         
+        // 檢查是否在 LINE 內部
+        if (!liff.isInClient()) {
+            // 如果不在 LINE 內部，跳轉到加入 Bot 的頁面
+            window.location.href = 'https://line.me/R/ti/p/@841latzi';
+            return;
+        }
+        
         if (liff.isLoggedIn()) {
             const profile = await liff.getProfile();
             userId = profile.userId;
             console.log('LIFF 已登入，獲取到用戶ID:', userId);
         } else {
             console.log('LIFF 未登入，準備呼叫 liff.login()');
-            // 不管是在 LINE 內還是外部，都進行登入
             liff.login();
         }
     } catch (error) {
