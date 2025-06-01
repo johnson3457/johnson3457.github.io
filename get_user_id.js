@@ -67,14 +67,14 @@ app.post('/webhook', line.middleware(config), async (req, res) => {
             if (event.type === 'message') {
                 console.log('收到訊息事件');
                 try {
-                    // 當使用者傳送訊息時，回傳他們的 User ID
-                    await client.replyMessage(event.replyToken, {
+                    // 當使用者傳送訊息時，直接推播訊息給使用者
+                    await client.pushMessage(event.source.userId, {
                         type: 'text',
                         text: `您的 Line User ID 是：${event.source.userId}`
                     });
-                    console.log('成功回覆訊息');
+                    console.log('成功發送訊息');
                 } catch (error) {
-                    console.error('回覆訊息時發生錯誤:', error);
+                    console.error('發送訊息時發生錯誤:', error);
                 }
             }
         }
