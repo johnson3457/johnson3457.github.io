@@ -59,6 +59,12 @@ let isLiffInitialized = false;
 // 初始化 LIFF
 async function initializeLiff() {
     try {
+        // 檢查是否在 Line 環境中
+        if (!liff.isInClient()) {
+            console.log('不在 Line 環境中');
+            return;
+        }
+
         await liff.init({ liffId: '2007324025-3akjMML1' });
         isLiffInitialized = true;
         
@@ -67,7 +73,7 @@ async function initializeLiff() {
             userId = profile.userId;
             console.log('已獲取用戶ID:', userId);
         } else {
-            // 如果未登入，跳轉到登入頁面
+            console.log('未登入，準備登入');
             liff.login();
         }
     } catch (error) {
@@ -145,26 +151,30 @@ function generateMenu() {
 
 // 頁面載入時初始化 LIFF 並生成菜單
 document.addEventListener('DOMContentLoaded', async () => {
-    await initializeLiff();
-    generateMenu();
-    
-    // 為所有飲料名稱添加點擊事件
-    document.querySelectorAll('.item-name').forEach(item => {
-        item.style.cursor = 'pointer';
-        item.addEventListener('click', function() {
-            const itemName = this.textContent.split('(')[0].trim();
-            const menuItem = this.closest('.menu-item');
-            const prices = Array.from(menuItem.querySelectorAll('.item-price'))
-                .map(el => el.textContent.trim())
-                .filter(price => price !== '');
-            
-            document.getElementById('selectedDrinkName').textContent = itemName;
-            document.getElementById('selectedDrinkPrice').textContent = 
-                `價格：${prices.map((price, i) => `${['M', 'L'][i]} ${price}`).join(' / ')} 元`;
-            
-            openModal();
+    try {
+        await initializeLiff();
+        generateMenu();
+        
+        // 為所有飲料名稱添加點擊事件
+        document.querySelectorAll('.item-name').forEach(item => {
+            item.style.cursor = 'pointer';
+            item.addEventListener('click', function() {
+                const itemName = this.textContent.split('(')[0].trim();
+                const menuItem = this.closest('.menu-item');
+                const prices = Array.from(menuItem.querySelectorAll('.item-price'))
+                    .map(el => el.textContent.trim())
+                    .filter(price => price !== '');
+                
+                document.getElementById('selectedDrinkName').textContent = itemName;
+                document.getElementById('selectedDrinkPrice').textContent = 
+                    `價格：${prices.map((price, i) => `${['M', 'L'][i]} ${price}`).join(' / ')} 元`;
+                
+                openModal();
+            });
         });
-    });
+    } catch (error) {
+        console.error('頁面初始化失敗:', error);
+    }
 });
 
 // 開啟點餐視窗
@@ -281,15 +291,10 @@ async function sendToLine() {
         return;
     }
     
-    // 檢查是否已初始化
-    if (!isLiffInitialized) {
-        try {
-            await initializeLiff();
-        } catch (error) {
-            console.error('LIFF 初始化失敗:', error);
-            alert('系統初始化失敗，請重新整理頁面後再試');
-            return;
-        }
+    // 檢查是否在 Line 環境中
+    if (!liff.isInClient()) {
+        alert('請在 Line 中開啟此網頁！');
+        return;
     }
     
     // 檢查是否已登入
