@@ -58,27 +58,35 @@ let isLiffInitialized = false;
 
 // 初始化 LIFF
 async function initializeLiff() {
+    console.log('開始初始化 LIFF...');
     try {
         // 檢查是否在 Line 環境中
         if (!liff.isInClient()) {
             console.log('不在 Line 環境中');
+            isLiffInitialized = false; // 確保狀態為 false
+            // 可以考慮在這裡顯示一個提示給用戶，讓他們知道要在 Line 中開啟
+            // alert('請在 Line 應用程式中開啟此頁面以獲得完整體驗。'); // 暫時不加，避免重複提示
             return;
         }
 
+        console.log('在 Line 環境中，呼叫 liff.init()');
         await liff.init({ liffId: '2007324025-3akjMML1' });
         isLiffInitialized = true;
+        console.log('LIFF 初始化成功');
         
         if (liff.isLoggedIn()) {
             const profile = await liff.getProfile();
             userId = profile.userId;
-            console.log('已獲取用戶ID:', userId);
+            console.log('LIFF 已登入，獲取到用戶ID:', userId);
         } else {
-            console.log('未登入，準備登入');
+            console.log('LIFF 未登入，準備呼叫 liff.login()');
+            // 這裡會自動重定向到 Line 登入頁面
             liff.login();
         }
     } catch (error) {
         console.error('LIFF 初始化失敗:', error);
         isLiffInitialized = false;
+        alert('Line 登入系統初始化失敗，請稍後再試或聯繫客服。'); // 增加更友善的錯誤提示
     }
 }
 
