@@ -325,8 +325,20 @@ async function sendToLine() {
         }
     }
     
+    // 獲取當前時間
+    const now = new Date();
+    const orderTime = now.toLocaleString('zh-TW', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+    });
+    
     // 構建訂單文字
     let orderText = 'WHITE ALLEY 訂單明細\n\n';
+    orderText += `訂單時間：${orderTime}\n\n`;
     orderText += '品項\t甜度\t冰塊\t數量\t金額\t備註\n';
     
     rows.forEach(row => {
@@ -354,7 +366,8 @@ async function sendToLine() {
             },
             body: JSON.stringify({
                 orderText: orderText,
-                userId: userId
+                userId: userId,
+                orderTime: orderTime
             })
         });
         
