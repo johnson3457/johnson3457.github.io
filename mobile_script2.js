@@ -1,4 +1,4 @@
-// 菜單數據
+// 菜單數據More actions
 const menuData = {
     "好茶系列": [
         { name: "茉香綠茶", hot: true, prices: { M: 25, L: 30 } },
@@ -69,13 +69,15 @@ async function initializeLiff() {
         await liff.init({ liffId: '2007324025-3akjMML1' });
         isLiffInitialized = true;
         console.log('LIFF 初始化成功');
-        
+
+        Add commentMore actions
         if (liff.isLoggedIn()) {
             const profile = await liff.getProfile();
             userId = profile.userId;
             console.log('LIFF 已登入，獲取到用戶ID:', userId);
         } else {
             console.log('LIFF 未登入，準備呼叫 liff.login()');
+            // 不管是在 LINE 內還是外部，都進行登入
             liff.login();
         }
     } catch (error) {
@@ -88,66 +90,66 @@ async function initializeLiff() {
 // 動態生成菜單
 function generateMenu() {
     const menuSection = document.querySelector('.menu-section');
-    
+
     for (const [category, items] of Object.entries(menuData)) {
         const categoryDiv = document.createElement('div');
         categoryDiv.className = 'menu-category';
-        
+
         // 創建分類標題
         const priceHeader = document.createElement('div');
         priceHeader.className = 'price-header';
-        
+
         const sizes = new Set();
         items.forEach(item => {
             Object.keys(item.prices).forEach(size => sizes.add(size));
         });
-        
+
         const sizeColumns = Array.from(sizes).map(size => 
             `<span class="item-size">${size}</span>`
         ).join('');
-        
+
         priceHeader.innerHTML = `
             <span class="category-name">${category}</span>
             ${sizeColumns}
         `;
-        
+
         categoryDiv.appendChild(priceHeader);
-        
+
         // 創建菜單項目
         items.forEach(item => {
             const menuItem = document.createElement('div');
             menuItem.className = 'menu-item';
-            
+
             const nameSpan = document.createElement('span');
             nameSpan.className = 'item-name';
             nameSpan.innerHTML = item.name;
-            
+
             if (item.hot) {
                 const hotDiv = document.createElement('div');
                 hotDiv.className = 'hot';
                 nameSpan.appendChild(hotDiv);
             }
-            
+
             if (item.season) {
                 const seasonSpan = document.createElement('span');
                 seasonSpan.className = 'small-text';
                 seasonSpan.textContent = `(${item.season})`;
                 nameSpan.appendChild(seasonSpan);
             }
-            
+
             const priceSpans = Array.from(sizes).map(size => {
                 const price = item.prices[size] || '';
                 return `<span class="item-price">${price}</span>`;
             }).join('');
-            
+
             menuItem.innerHTML = `
                 ${nameSpan.outerHTML}
                 ${priceSpans}
             `;
-            
+
             categoryDiv.appendChild(menuItem);
         });
-        
+
         menuSection.appendChild(categoryDiv);
     }
 }
@@ -167,11 +169,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const prices = Array.from(menuItem.querySelectorAll('.item-price'))
                         .map(el => el.textContent.trim())
                         .filter(price => price !== '');
-                    
+
                     document.getElementById('selectedDrinkName').textContent = itemName;
                     document.getElementById('selectedDrinkPrice').textContent = 
                         `價格：${prices.map((price, i) => `${['M', 'L'][i]} ${price}`).join(' / ')} 元`;
-                    
+
                     openModal();
                 });
             });
@@ -243,15 +245,15 @@ function submitOrder() {
     const size = document.querySelector('.size-options .size-selected').textContent;
     const quantity = document.getElementById('quantity').value;
     const note = document.getElementById('note').value;
-    
+
     const priceText = document.getElementById('selectedDrinkPrice').textContent;
     const priceMatch = priceText.match(/\d+/g);
     const unitPrice = priceMatch ? parseInt(priceMatch[0]) : 0;
     const totalPrice = unitPrice * quantity;
-    
+
     const tbody = document.querySelector('#orderTable tbody');
     const newRow = tbody.insertRow();
-    
+
     newRow.innerHTML = `
         <td class="table-cell">${name}(${size})${tempLevel === '熱飲' ? '(熱)' : ''}</td>
         <td class="table-cell">${sugarLevel}</td>
@@ -263,7 +265,7 @@ function submitOrder() {
             <button class="delete-btn" onclick="deleteRow(this)">刪除</button>
         </td>
     `;
-    
+
     updateTotal();
     closeModal();
 }
@@ -279,12 +281,12 @@ function deleteRow(button) {
 function updateTotal() {
     const rows = document.querySelectorAll('#orderTable tbody tr');
     let total = 0;
-    
+
     rows.forEach(row => {
         const priceCell = row.cells[4];
         total += parseInt(priceCell.textContent);
     });
-    
+
     document.getElementById('totalAmount').textContent = total;
 }
 
@@ -295,21 +297,21 @@ async function sendToLine() {
         alert('沒有訂單可以傳送！');
         return;
     }
-    
+
     // 檢查 LIFF 是否已初始化
     if (!isLiffInitialized) {
         console.error('LIFF 未初始化');
         alert('請等待頁面完全載入！');
         return;
     }
-    
+
     // 檢查是否已登入
     if (!liff.isLoggedIn()) {
         alert('請先登入 Line！');
         liff.login();
         return;
     }
-    
+
     // 如果已登入但沒有 userId，重新獲取
     if (!userId) {
         try {
@@ -323,7 +325,7 @@ async function sendToLine() {
             return;
         }
     }
-    
+
     // 獲取當前時間
     const now = new Date();
     const orderTime = now.toLocaleString('zh-TW', {
@@ -334,29 +336,29 @@ async function sendToLine() {
         minute: '2-digit',
         hour12: false
     });
-    
+
     // 構建訂單文字
     let orderText = 'WHITE ALLEY 訂單明細\n\n';
     orderText += `訂單時間：${orderTime}\n\n`;
     orderText += '品項\t甜度\t冰塊\t數量\t金額\t備註\n';
-    
+
     rows.forEach(row => {
         const cells = row.cells;
         orderText += `${cells[0].textContent}\t${cells[1].textContent}\t${cells[2].textContent}\t${cells[3].textContent}\t${cells[4].textContent}\t${cells[5].textContent}\n`;
     });
-    
+
     orderText += `\n總金額：${document.getElementById('totalAmount').textContent} 元`;
-    
+
     const exportBtn = document.querySelector('.export-btn');
     const originalText = exportBtn.textContent;
-    
+
     try {
         // 顯示載入中
         exportBtn.textContent = '傳送中...';
         exportBtn.disabled = true;
-        
+
         console.log('準備發送訂單，用戶ID:', userId);
-        
+
         // 發送到後端
         const response = await fetch('https://johnson3457-github-io.vercel.app/send-order', {
             method: 'POST',
@@ -369,14 +371,14 @@ async function sendToLine() {
                 orderTime: orderTime
             })
         });
-        
+
         if (!response.ok) {
             const errorData = await response.json();
             throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
         }
-        
+
         const result = await response.json();
-        
+
         if (result.success) {
             // 清除訂單明細
             const tbody = document.querySelector('#orderTable tbody');
