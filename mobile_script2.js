@@ -56,6 +56,9 @@ const menuData = {
 let userId = null;
 let isLiffInitialized = false;
 
+// 記錄當前選取飲料是否可調製熱飲
+let currentItemIsHot = false;
+
 // 初始化 LIFF
 async function initializeLiff() {
     console.log('開始初始化 LIFF...');
@@ -173,6 +176,37 @@ document.addEventListener('DOMContentLoaded', async () => {
                     document.getElementById('selectedDrinkPrice').textContent = 
                         `價格：${prices.map((price, i) => `${['M', 'L'][i]} ${price}`).join(' / ')} 元`;
 
+                    // 判斷此飲料是否可調製熱飲
+                    currentItemIsHot = false;
+                    for (const items of Object.values(menuData)) {
+                        const found = items.find(i => i.name === itemName);
+                        if (found) {
+                            currentItemIsHot = found.hot;
+                            break;
+                        }
+                    }
+
+                    // 根據是否可調熱飲，顯示或隱藏溫度選項
+                    const tempSelect = document.getElementById('tempSelect');
+                    const iceSelect = document.getElementById('iceSelect');
+                    if (currentItemIsHot) {
+                        tempSelect.style.display = '';
+                        // 重設溫度為「冷飲」，並確保冰塊欄啟用
+                        document.querySelectorAll('.temp-options .option-btn').forEach(b => {
+                            b.classList.remove('temp-selected');
+                        });
+                        document.querySelector('.temp-options .option-btn').classList.add('temp-selected');
+                    } else {
+                        tempSelect.style.display = 'none';
+                        // 重設溫度為「冷飲」預設值
+                        document.querySelectorAll('.temp-options .option-btn').forEach(b => {
+                            b.classList.remove('temp-selected');
+                        });
+                        document.querySelector('.temp-options .option-btn').classList.add('temp-selected');
+                    }
+                    // 開啟 modal 時冰塊欄一律恢復啟用
+                    iceSelect.classList.remove('ice-disabled');
+
                     openModal();
                 });
             });
@@ -225,6 +259,19 @@ function selectTemp(btn, value) {
         b.classList.remove('temp-selected');
     });
     btn.classList.add('temp-selected');
+
+    // 選「熱飲」時禁用冰塊欄，選「冷飲」時恢復
+    const iceSelect = document.getElementById('iceSelect');
+    if (value === '熱飲') {
+        iceSelect.classList.add('ice-disabled');
+        // 重設冰塊選取為「正常」
+        document.querySelectorAll('.ice-options .option-btn').forEach(b => {
+            b.classList.remove('ice-selected');
+        });
+        document.querySelector('.ice-options .option-btn').classList.add('ice-selected');
+    } else {
+        iceSelect.classList.remove('ice-disabled');
+    }
 }
 
 // 選擇杯型
@@ -240,7 +287,10 @@ function submitOrder() {
     const name = document.getElementById('selectedDrinkName').textContent;
     const sugarLevel = document.querySelector('.sugar-options .sugar-selected').textContent;
     const iceLevel = document.querySelector('.ice-options .ice-selected').textContent;
-    const tempLevel = document.querySelector('.temp-options .temp-selected').textContent;
+    // 若溫度選項被隱藏（非可調熱飲），強制為「冷飲」
+    const tempLevel = currentItemIsHot
+        ? document.querySelector('.temp-options .temp-selected').textContent
+        : '冷飲';
     const size = document.querySelector('.size-options .size-selected').textContent;
     const quantity = document.getElementById('quantity').value;
     const note = document.getElementById('note').value;
@@ -256,7 +306,7 @@ function submitOrder() {
     newRow.innerHTML = `
         <td class="table-cell">${name}(${size})${tempLevel === '熱飲' ? '(熱)' : ''}</td>
         <td class="table-cell">${sugarLevel}</td>
-        <td class="table-cell">${iceLevel}</td>
+        <td class="table-cell">${tempLevel === '熱飲' ? '熱飲' : iceLevel}</td>
         <td class="table-cell">${quantity}</td>
         <td class="table-cell">${totalPrice}</td>
         <td class="table-cell">${note}</td>
